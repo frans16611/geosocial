@@ -16,13 +16,10 @@ public class InstagramAPI {
 	public final static String API_SCHEME = "https";
 	public final static String API_HOST = "api.instagram.com/v1";
 
-
 	public final static String API_PARAM_CLIENT_ID = "client_id";
 	public final static String API_PARAM_LATITUDE = "lat";
 	public final static String API_PARAM_LONGITUDE = "lng";
 	public final static String API_PARAM_DISTANCE = "distance";
-
-	public final static String GEOCOLOR_CLIENT_ID = "e8fd14f309d54dd3ac7b862a643cf968";
 
 	public final static String API_ENDPOINT_POPULAR_MEDIA = "/media/popular";
 	private final static String API_ENDPOINT_LOCATION_SEARCH = "/locations/search";
@@ -31,14 +28,21 @@ public class InstagramAPI {
 	 * HTTP Client to execute API requests
 	 */
 	private CloseableHttpClient httpClient;
+	
+	/**
+	 * Key for accessing Instagram API
+	 */
+	private final String apiKey;
 
 	/** 
-	 * Constructor
+	 * Constructor with custom API key
 	 */
-	public InstagramAPI(){
+	public InstagramAPI(String apiKey){
+		this.apiKey = apiKey;
 		/* Init Http Client*/
 		httpClient = HttpClients.createDefault();
 	}
+	
 	
 	/**
 	 * 
@@ -62,7 +66,7 @@ public class InstagramAPI {
 					.setParameter(API_PARAM_LATITUDE, String.valueOf(lat))
 					.setParameter(API_PARAM_LONGITUDE, String.valueOf(lng))
 					.setParameter(API_PARAM_DISTANCE, String.valueOf(dist))
-					.setParameter(InstagramAPI.API_PARAM_CLIENT_ID, InstagramAPI.GEOCOLOR_CLIENT_ID)
+					.setParameter(InstagramAPI.API_PARAM_CLIENT_ID, apiKey)
 					.build();
 		} catch (URISyntaxException e) {
 			System.out.println("ERROR: Invalid URI");
@@ -98,7 +102,7 @@ public class InstagramAPI {
 			uri = new URIBuilder().setScheme(InstagramAPI.API_SCHEME)
 					.setHost(InstagramAPI.API_HOST)
 					.setPath(InstagramAPI.API_ENDPOINT_POPULAR_MEDIA)
-					.setParameter(InstagramAPI.API_PARAM_CLIENT_ID, InstagramAPI.GEOCOLOR_CLIENT_ID)
+					.setParameter(InstagramAPI.API_PARAM_CLIENT_ID, apiKey)
 					.build();
 		} catch (URISyntaxException e) {
 			System.out.println("ERROR: Invalid URI");
