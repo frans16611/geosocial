@@ -57,9 +57,8 @@ public class ApplicationShell extends Shell {
 		button.addSelectionListener(new SelectionListener() {
 
 	        public void widgetSelected(SelectionEvent event) {
-				//browser.execute(JavascriptAPI.centerMap(34.397, 35.644));
 	        	browser.execute(JavascriptAPI.centerMap(34.397, 35.644));
-	        	browser.execute(JavascriptAPI.addMarker(34.397, 35.644));
+	        	browser.execute(JavascriptAPI.addMarker(34.397, 35.644,JavascriptAPI.BLUE_MARKER));
 	        }
 
 			public void widgetDefaultSelected(SelectionEvent arg0) {}
