@@ -20,10 +20,13 @@ public class InstagramAPI {
 	public final static String API_PARAM_LATITUDE = "lat";
 	public final static String API_PARAM_LONGITUDE = "lng";
 	public final static String API_PARAM_DISTANCE = "distance";
+	public final static String API_PARAM_MIN_TIMESTAMP = "min_timestamp";
+	public final static String API_PARAM_MAX_TIMESTAMP = "max_timestamp";
 
-	public final static String API_ENDPOINT_POPULAR_MEDIA = "/media/popular";
-	private final static String API_ENDPOINT_LOCATION_SEARCH = "/locations/search";
-
+	private final static String API_ENDPOINT_POPULAR_MEDIA = "/media/popular";
+	private final static String API_ENDPOINT_SEARCH_LOCATIONS = "/locations/search";
+	private final static String API_ENDPOINT_SEARCH_MEDIA = "/media/search";
+	
 	/**
 	 * HTTP Client to execute API requests
 	 */
@@ -43,6 +46,64 @@ public class InstagramAPI {
 		httpClient = HttpClients.createDefault();
 	}
 	
+	//TODO Create unified API method with Parameters as ENUM
+	
+	/**
+	 * 
+	 * @param lat Latitude
+	 * @param lng Longitude
+	 * @param dist Max Distance around the center 
+	 * @param minTimestamp UNIX Timestamp, lower bound for date
+	 * @param maxTimestamp UNIX Timestamp, higher bound for date
+	 * @return JSON Response of Instagram search request
+	 */
+	public String search(double lat, double lng, int dist, long minTimestamp, long maxTimestamp){
+		
+		URI uri;
+		if(dist>5000)dist=5000;
+		else if(dist < 0) dist=100;
+		// TODO Check validity of lat and lng
+		try {
+			uri = new URIBuilder().setScheme(InstagramAPI.API_SCHEME)
+					.setHost(InstagramAPI.API_HOST)
+					.setPath(InstagramAPI.API_ENDPOINT_SEARCH_MEDIA)
+					.setParameter(API_PARAM_LATITUDE, String.valueOf(lat))
+					.setParameter(API_PARAM_LONGITUDE, String.valueOf(lng))
+					.setParameter(API_PARAM_DISTANCE, String.valueOf(dist))
+					.setParameter(API_PARAM_MIN_TIMESTAMP, String.valueOf(minTimestamp))
+					.setParameter(API_PARAM_MAX_TIMESTAMP, String.valueOf(maxTimestamp))
+					.setParameter(InstagramAPI.API_PARAM_CLIENT_ID, apiKey)
+					.build();
+		} catch (URISyntaxException e) {
+			System.out.println("ERROR: Invalid URI");
+			e.printStackTrace();
+			return "";
+		}
+		
+		return executeRequest(uri);
+	}
+	
+	public String search(double lat, double lng, int dist){
+		URI uri;
+		if(dist>5000)dist=5000;
+		else if(dist < 0) dist=100;
+		// TODO Check validity of lat and lng
+		try {
+			uri = new URIBuilder().setScheme(InstagramAPI.API_SCHEME)
+					.setHost(InstagramAPI.API_HOST)
+					.setPath(InstagramAPI.API_ENDPOINT_SEARCH_MEDIA)
+					.setParameter(API_PARAM_LATITUDE, String.valueOf(lat))
+					.setParameter(API_PARAM_LONGITUDE, String.valueOf(lng))
+					.setParameter(API_PARAM_DISTANCE, String.valueOf(dist))
+					.setParameter(InstagramAPI.API_PARAM_CLIENT_ID, apiKey)
+					.build();
+		} catch (URISyntaxException e) {
+			System.out.println("ERROR: Invalid URI");
+			e.printStackTrace();
+			return "";
+		}
+		return executeRequest(uri);
+	}
 	
 	/**
 	 * 
@@ -52,9 +113,8 @@ public class InstagramAPI {
 	 * @return JSON String representing registered Instagram locations near this coordinates
 	 */
 	public String searchLocation(double lat, double lng, int dist){
-		String jsonResponse;
+
 		/* Build URI */
-		
 		URI uri;
 		if(dist>5000)dist=5000;
 		else if(dist < 0) dist=100;
@@ -62,7 +122,7 @@ public class InstagramAPI {
 		try {
 			uri = new URIBuilder().setScheme(InstagramAPI.API_SCHEME)
 					.setHost(InstagramAPI.API_HOST)
-					.setPath(InstagramAPI.API_ENDPOINT_LOCATION_SEARCH)
+					.setPath(InstagramAPI.API_ENDPOINT_SEARCH_LOCATIONS)
 					.setParameter(API_PARAM_LATITUDE, String.valueOf(lat))
 					.setParameter(API_PARAM_LONGITUDE, String.valueOf(lng))
 					.setParameter(API_PARAM_DISTANCE, String.valueOf(dist))
@@ -74,27 +134,11 @@ public class InstagramAPI {
 			return "";
 		}
 		
-		/* GET Method */
-		HttpGet httpget = new HttpGet(uri);
-		System.out.println(httpget.getURI());
-		CloseableHttpResponse response;
-		try {
-			response = httpClient.execute(httpget);
-			jsonResponse = IOUtils.toString(response.getEntity().getContent());
-			response.close();
-			return jsonResponse;
-		} catch (IOException | IllegalStateException e) {
-			System.out.println("ERROR: Invalid HTTP GET Method");
-			e.printStackTrace();
-			return "";
-		}
-		
+		return executeRequest(uri);
 	}
 
 	/** Return JSON String of Instagram of Popular Media API Entrypoint */
 	public String getPopularMedia(){
-
-		String jsonResponse;
 		
 		/* Build URI */
 		URI uri;
@@ -110,6 +154,12 @@ public class InstagramAPI {
 			return "";
 		}
 
+		return executeRequest(uri);
+	}
+	
+	private String executeRequest(URI uri){
+		String jsonResponse;
+		
 		/* GET Method */
 		HttpGet httpget = new HttpGet(uri);
 		System.out.println(httpget.getURI());

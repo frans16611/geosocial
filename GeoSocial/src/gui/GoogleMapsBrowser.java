@@ -1,9 +1,12 @@
 package gui;
 
+import googlemaps.GoogleMapsEventHandler;
 import googlemaps.JavascriptAPI;
 
 import java.io.File;
 import java.io.IOException;
+
+import main.Main;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.swt.SWT;
@@ -22,6 +25,7 @@ public class GoogleMapsBrowser extends Browser {
 	private final static String GOOGLEMAPS_PARAM_API_KEY = "ParamAPIKey";
 	private final static String GOOGLEMAPS_PARAM_DEFAULT_LAT = "ParamDftLat";
 	private final static String GOOGLEMAPS_PARAM_DEFAULT_LNG = "ParamDftLng";
+	private final static String GOOGLEMAPS_PARAM_MARKER = "ParamMarker";
 	
 	private final static double DEFAULT_LAT = 48.12910855261931;
 	private final static double DEFAULT_LNG = 11.621398363378148;
@@ -42,9 +46,28 @@ public class GoogleMapsBrowser extends Browser {
 			System.out.println("[ERROR] HTML content for GoogleMapsBrowser can not be found");
 			e.printStackTrace();
 		}
+	}
+	
+	/** Constructor */
+	public GoogleMapsBrowser(Composite parent, GoogleMapsEventHandler eventHandler) {
+		super(parent, SWT.NONE);
+		eventHandler.setBrowser(this);
+		
+		/* Add HTML : HTML code contains API Key and basic javascript for interaction with the map */
+		try {
+			/* Read HTML Template */
+			String html = FileUtils.readFileToString(new File("html/maps.html"));
+			
+			html = filloutTemplate(html);
+			
+			this.setText(html);
+		} catch (IOException e) {
+			System.out.println("[ERROR] HTML content for GoogleMapsBrowser can not be found");
+			e.printStackTrace();
+		}
 		
 		/* Internal Java function that can be called from Javascript  */ 
-		new GetCoordinatesFunction(this, "getCoordinates");
+		new GoogleMapsEventFunction(this, "notifyEvent", eventHandler);
 	}
 	
 	/** Disable the check that prevents subclassing of SWT components */
@@ -56,23 +79,27 @@ public class GoogleMapsBrowser extends Browser {
 		html = html.replaceFirst(GOOGLEMAPS_PARAM_API_KEY, JavascriptAPI.getLocalAPIKey());
 		html = html.replaceFirst(GOOGLEMAPS_PARAM_DEFAULT_LAT, String.valueOf(DEFAULT_LAT));
 		html = html.replaceFirst(GOOGLEMAPS_PARAM_DEFAULT_LNG, String.valueOf(DEFAULT_LNG));
-
-		System.out.println(html);
+		html = html.replaceFirst(GOOGLEMAPS_PARAM_MARKER, JavascriptAPI.YELLOW_MARKER);
+		
+		if(Main.DEBUG)
+			System.out.println(html);
 		return html;
 	}
 	
 	/**
 	 * 
 	 * @author Francois Philipp
-	 * Internal class collecting coordinates when Google Maps is right clicked
+	 * Internal class handling GoogleMaps event in a generic way
 	 */
-	static class GetCoordinatesFunction extends BrowserFunction {
-		GetCoordinatesFunction (Browser browser, String name) {
+	static class GoogleMapsEventFunction extends BrowserFunction {
+		private GoogleMapsEventHandler eventHandler;
+		GoogleMapsEventFunction (Browser browser, String name, GoogleMapsEventHandler eventHandler) {
 			super (browser, name);
+			this.eventHandler = eventHandler;
 		}
 		@Override
 		public Object function (Object[] arguments) {
-			System.out.println ("lat: " + ((Number)arguments[0]).doubleValue() + ", lng: " + ((Number)arguments[1]).doubleValue());
+			eventHandler.handleEvent(arguments);
 			return null;
 		}
 	}

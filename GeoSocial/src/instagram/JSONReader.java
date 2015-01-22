@@ -32,16 +32,15 @@ public class JSONReader {
 	public final static boolean READ_VIDEO_DEFAULT = false;
 
 	/** Return List of Instagram Images contained in the JSONString */
-	public static List<InstagramImage> readPopular(String json){
-		return readPopular(json,READ_VIDEO_DEFAULT);
+	public static List<InstagramImage> readMedia(String json){
+		return readMedia(json,READ_VIDEO_DEFAULT);
 	}
 
 	/** Return List of Instagram Images contained in the JSONString */
-	public static List<InstagramImage> readPopular(String json, boolean includeVideo){
+	public static List<InstagramImage> readMedia(String json, boolean includeVideo){
 		JSONObject obj;
 		JSONArray jsonArray;
 		List<InstagramImage> images = new ArrayList<InstagramImage>();
-	
 
 		try {
 			obj = new JSONObject(json);

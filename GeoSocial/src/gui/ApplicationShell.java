@@ -1,7 +1,8 @@
 package gui;
 
-import instagram.ImageDatabase;
+import engine.GeoSocialEngine;
 import googlemaps.JavascriptAPI;
+import instagram.ImageDatabase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -17,13 +18,15 @@ public class ApplicationShell extends Shell {
 	public final static String SHELL_TITLE = "GeoSocial";
 	
 	private ImageDatabase database;
+	private GeoSocialEngine engine;
 
 	/**
 	 * Create the shell.
 	 * @param display
 	 */
-	public ApplicationShell(Display display,ImageDatabase database) {
+	public ApplicationShell(Display display,ImageDatabase database ,GeoSocialEngine engine) {
 		super(display, SWT.SHELL_TRIM);
+		this.engine = engine;
 		this.database = database;
 		createContents();
 		setSize(1000,500);
@@ -42,7 +45,7 @@ public class ApplicationShell extends Shell {
 		setText("GeoSocial");
 		setLayout(new GridLayout(2, false));
 		
-		GoogleMapsBrowser browser = new GoogleMapsBrowser(this);
+		GoogleMapsBrowser browser = new GoogleMapsBrowser(this, engine);
 		GridData gd_browser = new GridData(GridData.FILL_BOTH);
 		browser.setLayoutData(gd_browser);
 		

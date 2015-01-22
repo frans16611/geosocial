@@ -1,5 +1,6 @@
 package main;
 
+import engine.GeoSocialEngine;
 import gui.ApplicationShell;
 import instagram.ImageDatabase;
 
@@ -51,7 +52,8 @@ public class Main {
 //		database.close();
 //		System.out.println("Size of Database = "+database.size());
 		
-		new ApplicationShell(display,database);
+		GeoSocialEngine engine = new GeoSocialEngine();
+		new ApplicationShell(display,database,engine);
 
 	}
 }

@@ -15,9 +15,9 @@
     	map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);  
 
     	google.maps.event.addListener(map, 'rightclick', function(event) {
-    		var image =  'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
+    		var image =  'ParamMarker'
     		var marker = new google.maps.Marker({position: event.latLng , map: map, icon:image}); 
-    		getCoordinates(event.latLng.lat(),event.latLng.lng());
+    		notifyEvent('rightclick',event.latLng.lat(),event.latLng.lng());
     	});
     }
 
