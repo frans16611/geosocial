@@ -14,7 +14,20 @@ import org.apache.commons.io.FileUtils;
 
 public class GeoSocialEngine extends GoogleMapsEventHandler {
 	
-	InstagramAPI instaAPI;
+	private InstagramAPI instaAPI;
+	
+	private final String infoWindow =  "<div id=\"content\">"
+			+ "<div id=\"siteNotice\">"
+			+ "</div>"
+			+ "<div id=\"bodyContent\">"
+			+ "<img src=\"keyURL\" alt=\"Instagram\">"
+			+ "<p>"
+			+ "<b>User:</b> keyUser <br>"
+			+ "<b>ID:</b> keyID <br>"
+			+ "<b>Filter:</b> keyFilter <br>"
+			+ "</p>"
+			+ "</div>"
+			+ "</div>";
 	
 	public GeoSocialEngine() {
 		try{
@@ -38,7 +51,15 @@ public class GeoSocialEngine extends GoogleMapsEventHandler {
 		List<InstagramImage> media = JSONReader.readMedia(json);
 		
 		for(InstagramImage image : media){
-			browser.execute(JavascriptAPI.addMarker(image.getLatitude(), image.getLongitude(), JavascriptAPI.PURPLE_MARKER));
+			
+			String customInfoWindow = infoWindow;
+			customInfoWindow = customInfoWindow.replaceFirst("keyUser", image.getUsername());
+			customInfoWindow = customInfoWindow.replaceFirst("keyFilter", image.getFilter());
+			customInfoWindow = customInfoWindow.replaceFirst("keyID", String.valueOf(image.getLongId()));
+			customInfoWindow = customInfoWindow.replaceFirst("keyURL", image.getThumbnail());
+			
+			//browser.execute(JavascriptAPI.addMarker(image.getLatitude(), image.getLongitude(), JavascriptAPI.PURPLE_MARKER));
+			browser.execute(JavascriptAPI.addMarkerWithInfo(image.getLatitude(), image.getLongitude(), JavascriptAPI.PURPLE_MARKER,customInfoWindow));
 		}
 	}
 
