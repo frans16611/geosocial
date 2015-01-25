@@ -1,8 +1,8 @@
 package googlemaps;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 
@@ -50,15 +50,55 @@ public class JavascriptAPI {
 		return "new google.maps.Marker({position: {lat: "+lat+", lng: "+lng+"}, map: map,icon:'"+markerIcon+"'});"; 
 	}
 	
-	public static String addMarkerWithInfo(double lat, double lng, String markerIcon, String infoHtml){
+	/**
+	 * Add a marker displaying a InfoWindow when clicked 
+	 * @param lat
+	 * @param lng
+	 * @param markerIcon
+	 * @param infoHtml HTML code of the infoWindow content
+	 * @param id of the marker and info window: each id should be unique to the map
+	 * @return Javascript Code to execute
+	 */
+	public static String addMarkerWithInfo(double lat, double lng, String markerIcon, String infoHtml, long id){
 		String script = "";
-		script += "var contentString = '"+infoHtml+"';\n";
-		script += "var infowindow = new google.maps.InfoWindow({content: contentString});\n";
-		script += "var marker = "+addMarker(lat,lng,markerIcon)+"\n";
-		script += "google.maps.event.addListener(marker, 'click', function() { infowindow.open(map,marker);});";
+		script += "var contentString"+id+" = '"+infoHtml+"';\n";
+		script += "var infowindow"+id+" = new google.maps.InfoWindow({content: contentString"+id+"});\n";
+		script += "var marker"+id+" = "+addMarker(lat,lng,markerIcon)+"\n";
+		script += "google.maps.event.addListener(marker"+id+", 'click', function() { infowindow"+id+".open(map,marker"+id+");});";
+		return script;
+	}
+	
+	
+	/**
+	 * Draw a circle on the map with the given parameters
+	 * @param lat
+	 * @param lng
+	 * @param radius in meters
+	 * @param color of the circle
+	 * @return Javascript code to execute
+	 */
+	public static String drawCircle(double lat, double lng, double radius, Color color){
+		String script = "";
+		String colorCode = "#"+Integer.toHexString(color.getRGB()).substring(2);
+		script += "var circleOptions = {"
+				+ "strokeColor: '"+colorCode+"', "
+				+ "strokeOpacity: 0.8, "
+				+ "strokeWeight: 2, "
+				+ "fillColor: '"+colorCode+"',"
+				+ "fillOpacity: 0.35,"
+				+ "map: map,"
+				+ "center: {lat: "+lat+", lng: "+lng+"},"
+				+ "radius: "+radius+" };\n";
+		script += "cityCircle = new google.maps.Circle(circleOptions);";
 		System.out.println(script);
 		return script;
 	}
+	
+
+	public static String drawCircle(double lat, double lng, double radius){
+		return drawCircle(lat, lng, radius, Color.RED);
+	}
+	
 	
 	/**
 	 * 

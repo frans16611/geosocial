@@ -6,6 +6,7 @@ import instagram.InstagramAPI;
 import instagram.InstagramImage;
 import instagram.JSONReader;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -16,18 +17,6 @@ public class GeoSocialEngine extends GoogleMapsEventHandler {
 	
 	private InstagramAPI instaAPI;
 	
-	private final String infoWindow =  "<div id=\"content\">"
-			+ "<div id=\"siteNotice\">"
-			+ "</div>"
-			+ "<div id=\"bodyContent\">"
-			+ "<img src=\"keyURL\" alt=\"Instagram\">"
-			+ "<p>"
-			+ "<b>User:</b> keyUser <br>"
-			+ "<b>ID:</b> keyID <br>"
-			+ "<b>Filter:</b> keyFilter <br>"
-			+ "</p>"
-			+ "</div>"
-			+ "</div>";
 	
 	public GeoSocialEngine() {
 		try{
@@ -49,17 +38,20 @@ public class GeoSocialEngine extends GoogleMapsEventHandler {
 		
 		String json = instaAPI.search(lat, lng, 1000);
 		List<InstagramImage> media = JSONReader.readMedia(json);
-		
+	
+		/* Add Marker at center */
+		browser.execute(JavascriptAPI.addMarker(lat, lng,JavascriptAPI.YELLOW_MARKER));
+		/* Draw circle around central Marker */
+		browser.execute(JavascriptAPI.drawCircle(lat, lng, 1000,Color.BLUE));
+
 		for(InstagramImage image : media){
-			
-			String customInfoWindow = infoWindow;
-			customInfoWindow = customInfoWindow.replaceFirst("keyUser", image.getUsername());
-			customInfoWindow = customInfoWindow.replaceFirst("keyFilter", image.getFilter());
-			customInfoWindow = customInfoWindow.replaceFirst("keyID", String.valueOf(image.getLongId()));
-			customInfoWindow = customInfoWindow.replaceFirst("keyURL", image.getThumbnail());
-			
-			//browser.execute(JavascriptAPI.addMarker(image.getLatitude(), image.getLongitude(), JavascriptAPI.PURPLE_MARKER));
-			browser.execute(JavascriptAPI.addMarkerWithInfo(image.getLatitude(), image.getLongitude(), JavascriptAPI.PURPLE_MARKER,customInfoWindow));
+
+			browser.execute(JavascriptAPI.addMarkerWithInfo(
+					image.getLatitude(), 
+					image.getLongitude(),
+					JavascriptAPI.PURPLE_MARKER,
+					image.getHTMLInfoDescription(), 
+					image.getLongId()));
 		}
 	}
 

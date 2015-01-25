@@ -25,7 +25,8 @@ public class GoogleMapsBrowser extends Browser {
 	private final static String GOOGLEMAPS_PARAM_API_KEY = "ParamAPIKey";
 	private final static String GOOGLEMAPS_PARAM_DEFAULT_LAT = "ParamDftLat";
 	private final static String GOOGLEMAPS_PARAM_DEFAULT_LNG = "ParamDftLng";
-	private final static String GOOGLEMAPS_PARAM_MARKER = "ParamMarker";
+	/* Unused */
+	//private final static String GOOGLEMAPS_PARAM_MARKER = "ParamMarker";
 	
 	private final static double DEFAULT_LAT = 48.12910855261931;
 	private final static double DEFAULT_LNG = 11.621398363378148;
@@ -79,7 +80,6 @@ public class GoogleMapsBrowser extends Browser {
 		html = html.replaceFirst(GOOGLEMAPS_PARAM_API_KEY, JavascriptAPI.getLocalAPIKey());
 		html = html.replaceFirst(GOOGLEMAPS_PARAM_DEFAULT_LAT, String.valueOf(DEFAULT_LAT));
 		html = html.replaceFirst(GOOGLEMAPS_PARAM_DEFAULT_LNG, String.valueOf(DEFAULT_LNG));
-		html = html.replaceFirst(GOOGLEMAPS_PARAM_MARKER, JavascriptAPI.YELLOW_MARKER);
 		
 		if(Main.DEBUG)
 			System.out.println(html);

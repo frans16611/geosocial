@@ -11,12 +11,10 @@
     var map;
 
     function initialize() {
-    	var mapOptions = {center: { lat: ParamDftLat, lng: ParamDftLng}, zoom: 8};
+    	var mapOptions = {center: { lat: ParamDftLat, lng: ParamDftLng}, zoom: 14};
     	map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);  
 
     	google.maps.event.addListener(map, 'rightclick', function(event) {
-    		var image =  'ParamMarker'
-    		var marker = new google.maps.Marker({position: event.latLng , map: map, icon:image}); 
     		notifyEvent('rightclick',event.latLng.lat(),event.latLng.lng());
     	});
     }

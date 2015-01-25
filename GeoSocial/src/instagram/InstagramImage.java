@@ -3,6 +3,7 @@ package instagram;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,13 +12,15 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.DateFormat;
 
+import org.apache.commons.io.FileUtils;
+
 public class InstagramImage {
 
 	private String filter;
 	private String username;
 	private long userid;
 	private long id;
-	private long created_time;
+	private long createdTime;
 	private String url;
 	private String thumbnail;
 	
@@ -38,7 +41,7 @@ public class InstagramImage {
 				    "User: "+username+"\n"+
 					"UserID: "+userid+"\n"+
 					"Filter: "+filter+"\n"+
-				    "Created on: "+ DateFormat.getDateInstance().format((new java.util.Date((long) created_time*1000)))+"\n"+
+				    "Created on: "+ getCreatedTimeAsString()+"\n"+
 				    "Latitude: "+latitude+"\n"+
 				    "Longitude: "+longitude+"\n"+
 				    "Thumbnail: "+thumbnail+"\n"+
@@ -48,7 +51,7 @@ public class InstagramImage {
 				    "User: "+username+"\n"+
 					"UserID: "+userid+"\n"+
 					"Filter: "+filter+"\n"+
-				    "Created on: "+ DateFormat.getDateInstance().format((new java.util.Date((long) created_time*1000)))+"\n"+
+				    "Created on: "+ getCreatedTimeAsString()+"\n"+
 				    "Thumbnail: "+thumbnail+"\n"+
 				    "URL: "+url+"\n";
 		}
@@ -111,6 +114,22 @@ public class InstagramImage {
 		return valid;
 	}
 	
+	public String getHTMLInfoDescription(){
+		String infoRef;
+		try{
+			infoRef = FileUtils.readFileToString(new File("html/infoWindow.html"));
+		}catch(IOException e){
+			e.printStackTrace();
+			infoRef = "";
+		}
+		infoRef = infoRef.replaceFirst("keyUser", username);
+		infoRef = infoRef.replaceFirst("keyFilter", filter);
+		infoRef = infoRef.replaceFirst("keyID", String.valueOf(id));
+		infoRef = infoRef.replaceFirst("keyURL", thumbnail);
+		infoRef = infoRef.replaceFirst("keyDate", getCreatedTimeAsString());
+		return infoRef;
+	}
+	
 	public byte[] getByteData(){
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -119,7 +138,7 @@ public class InstagramImage {
 			dos.writeLong(userid);
 			dos.writeUTF(filter);
 			dos.writeUTF(username);
-			dos.writeLong(created_time);
+			dos.writeLong(createdTime);
 			dos.writeUTF(url);
 			dos.writeUTF(thumbnail);
 			dos.writeDouble(latitude);
@@ -140,7 +159,7 @@ public class InstagramImage {
     	    image = new InstagramImage(id+"_"+user_id);
     	    image.setFilter(dis.readUTF());
     	    image.setUsername(dis.readUTF());
-    	    image.setCreated_time(dis.readLong());
+    	    image.setCreatedTime(dis.readLong());
     	    image.setUrl(dis.readUTF());
     	    image.setThumbnail(dis.readUTF());
     	    image.setLatitude(dis.readDouble());
@@ -181,11 +200,14 @@ public class InstagramImage {
 		this.id = Long.valueOf(id.substring(0, id.indexOf("_")));
 		this.userid = Long.valueOf(id.substring(id.indexOf("_")+1));
 	}
-	public long getCreated_time() {
-		return created_time;
+	public long getCreatedTime() {
+		return createdTime;
 	}
-	public void setCreated_time(long created_time) {
-		this.created_time = created_time;
+	public String getCreatedTimeAsString(){
+		return DateFormat.getDateInstance().format((new java.util.Date((long) createdTime*1000)));
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
 	}
 	public String getUrl() {
 		return url;

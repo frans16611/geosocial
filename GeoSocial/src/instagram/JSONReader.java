@@ -90,7 +90,7 @@ public class JSONReader {
 	private static InstagramImage readMedia(JSONObject media) throws JSONException,IOException{
 
 		InstagramImage image = new InstagramImage(media.getString(JSON_TAG_ID));
-		image.setCreated_time(Integer.valueOf(media.getString(JSON_TAG_CREATED_TIME)));
+		image.setCreatedTime(Integer.valueOf(media.getString(JSON_TAG_CREATED_TIME)));
 		image.setUrl(media.getJSONObject(JSON_TAG_IMAGES).getJSONObject(JSON_TAG_RESOLUTION).getString(JSON_TAG_URL));
 		image.setThumbnail(media.getJSONObject(JSON_TAG_IMAGES).getJSONObject(JSON_TAG_THUMBNAIL).getString(JSON_TAG_URL));
 		image.setFilter(media.getString(JSON_TAG_FILTER));
